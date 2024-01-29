@@ -58,7 +58,7 @@ To run tests on a single file (class):
 php ./vendor/phphleb/test-o/run ./vendor/phphleb/test-o/example/ExampleTest.php
  ```
 
-If tests are used for the [HLEB](https://github.com/phphleb/hleb) framework:
+If tests are used for the [HLEB2](https://github.com/phphleb/hleb) framework:
 
  ```bash
 composer require phphleb/tests
