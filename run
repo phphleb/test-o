@@ -1,0 +1,22 @@
+<?php
+/** Run tests for a directory or file. */
+
+if (!isset($argv[1]) || $argv[1] === '--help' || count($argv) > 3) {
+    echo 'HELP: php <path> <directory|[-l|--list]> [directory]' . PHP_EOL .
+             '   Example: php ./vendor/phphleb/test-o/run ./vendor/phphleb/test-o/example' . PHP_EOL .
+             '   or php ./vendor/phphleb/test-o/run -l ./vendor/phphleb/test-o/example';
+    exit(1);
+}
+
+if (file_exists($autoloader = __DIR__ . '/../../autoload.php')) {
+    require $autoloader;
+} else {
+    require __DIR__ . '/Tester.php';
+}
+
+use Phphleb\TestO\Tester;
+
+$result = (new Tester($argv[1], $argv[2] ?? null))->execute();
+
+exit($result ? 0 : 1);
+
