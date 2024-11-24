@@ -33,7 +33,7 @@ class Tester
 
     readonly private int $mode;
 
-    public function __construct(string $argA, string $argB = null)
+    public function __construct(string $argA, ?string $argB = null)
     {
         $dir = $argA;
         if ($argB !== null) {
