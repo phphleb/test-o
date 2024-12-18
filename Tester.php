@@ -32,7 +32,9 @@ class Tester
 
     private array $errors = [];
 
-    readonly private false|string $directory;
+    private false|string $directoryOrFile;
+
+    private null|string $method = null;
 
     readonly private int $mode;
 
@@ -49,7 +51,7 @@ class Tester
         } else {
             $this->mode = self::P5T_MODE;
         }
-        $this->directory = realpath(__DIR__ . '/../../../') . DIRECTORY_SEPARATOR . trim($dir, '\\/.');
+        $this->directoryOrFile = realpath(__DIR__ . '/../../../') . DIRECTORY_SEPARATOR . trim($dir, '\\/.');
     }
 
     /**
@@ -65,26 +67,35 @@ class Tester
             echo end($this->errors) . PHP_EOL;
             return false;
         }
-
-        if (!$this->directory || !file_exists($this->directory)) {
-            throw new ErrorException("The resource at `$this->directory` was not found.");
-        }
+        $files = [];
 
         include __DIR__ . '/TestCase.php';
         include __DIR__ . '/Tests/ArrayEqualsTest.php';
 
-        if (is_dir($this->directory)) {
-            $files = new CallbackFilterIterator(
-                new RecursiveIteratorIterator(
-                    new RecursiveDirectoryIterator($this->directory, FilesystemIterator::SKIP_DOTS)
-                ),
-                function (SplFileInfo $current) {
-                    return $current->isFile();
+        if ($this->directoryOrFile) {
+            if (is_dir($this->directoryOrFile)) {
+                $files = new CallbackFilterIterator(
+                    new RecursiveIteratorIterator(
+                        new RecursiveDirectoryIterator($this->directoryOrFile, FilesystemIterator::SKIP_DOTS)
+                    ),
+                    function (SplFileInfo $current) {
+                        return $current->isFile();
+                    }
+                );
+            } else {
+                if (str_contains($this->directoryOrFile, '.php:')) {
+                    $parts = explode('.php:', $this->directoryOrFile, 2);
+                    [$this->directoryOrFile, $this->method] = $parts;
+                    $this->directoryOrFile .= '.php';
                 }
-            );
-        } else {
-            $files = [$this->directory];
+                $files = [$this->directoryOrFile];
+            }
+
+            if (!file_exists($this->directoryOrFile)) {
+                throw new ErrorException("The resource at `$this->directoryOrFile` was not found.");
+            }
         }
+
 
         $tests = [];
         foreach ($files as $file) {
@@ -129,6 +140,9 @@ class Tester
                 require __DIR__ . '/Tests/DataProvider.php';
             }
             foreach ($methods as $method) {
+                if ($this->method && $this->method !== $method) {
+                    continue;
+                }
                 if (str_starts_with($method, 'test')) {
                     $mt = microtime(true);
                     $reflectionMethod = new ReflectionMethod($testClass::class, $method);
