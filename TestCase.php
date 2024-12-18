@@ -51,6 +51,16 @@ class TestCase
     }
 
     /**
+     * Calls comparison of two values with strict type checking.
+     *
+     * Вызов сравнения двух значений со строгой проверкой типов.
+     */
+    final public function assertEquals(bool|string|int|float $expected, bool|string|int|float $actual): void
+    {
+        $this->tests[] = ['AssertEqualsTest', $expected === $actual];
+    }
+
+    /**
      * Calling a check to compare the contents of two arrays.
      * In associative arrays, the order of the keys does not matter.
      *
@@ -69,7 +79,6 @@ class TestCase
      */
     public function setUp()
     {
-
     }
 
     /**
@@ -79,6 +88,5 @@ class TestCase
      */
     public function tearDown()
     {
-
     }
 }

@@ -22,12 +22,12 @@ Tests will be performed:
 ```text
 Test-O 0.0.0 by Foma Tuturov.
 
-Runtime:       PHP 8.2.3
-...
+Runtime:       PHP 8.2.7
+......
 
-Time: 00:00:00, Memory: 3.5 MB
+Time: 00:00:00, Memory: 0.51 MB
 
-OK Tests: 3, Assertions: 3
+OK Tests: 6, Assertions: 6
 
 ```
 
@@ -39,16 +39,18 @@ Tests will be performed:
 ```text
 Test-O 0.0.0 by Foma Tuturov.
 
-Runtime:       PHP 8.2.3
-1 OK Phphleb\TestO\Example\ExampleTest:testExampleFirstMethod (0.007ms)
-2 OK Phphleb\TestO\Example\ExampleTest:testExampleSecondMethod (0.003ms)
-3 OK Phphleb\TestO\Example\ExampleTest:testExampleThirdMethod (0.007ms)
+Runtime:       PHP 8.2.7
+1 OK Phphleb\TestO\Example\ExampleTest:testExampleFirstMethod (0.096ms)
+2 OK Phphleb\TestO\Example\ExampleTest:testExampleSecondMethod (0.058ms)
+3 OK Phphleb\TestO\Example\ExampleTest:testExampleThirdMethod (0.096ms)
+4 OK Phphleb\TestO\Example\ExampleTest:testExampleDataProvider provider case 1  (0.086ms)
+5 OK Phphleb\TestO\Example\ExampleTest:testExampleDataProvider provider case 2  (0.033ms)
+6 OK Phphleb\TestO\Example\ExampleTest:testExampleDataProvider provider case 3  (0.021ms)
 
 
-Time: 00:00:00, Memory: 5.23 MB
+Time: 00:00:00, Memory: 0.51 MB
 
-OK Tests: 3, Assertions: 3
-
+OK Tests: 6, Assertions: 6
 
 ```
 

@@ -10,8 +10,11 @@ namespace Phphleb\TestO;
 use CallbackFilterIterator;
 use ErrorException;
 use FilesystemIterator;
+use Phphleb\TestO\Tests\DataProvider;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
+use ReflectionException;
+use ReflectionMethod;
 use SplFileInfo;
 use Throwable;
 
@@ -54,7 +57,7 @@ class Tester
      *
      * Возвращает статус успешности проведённых тестов с выводом информации о процессе.
      *
-     * @throws ErrorException
+     * @throws ErrorException|ReflectionException
      */
     public function execute(): bool
     {
@@ -66,10 +69,10 @@ class Tester
         if (!$this->directory || !file_exists($this->directory)) {
             throw new ErrorException("The resource at `$this->directory` was not found.");
         }
-        
+
         include __DIR__ . '/TestCase.php';
         include __DIR__ . '/Tests/ArrayEqualsTest.php';
-        
+
         if (is_dir($this->directory)) {
             $files = new CallbackFilterIterator(
                 new RecursiveIteratorIterator(
@@ -106,6 +109,8 @@ class Tester
      * Обработка одного класса с тестами.
      *
      * @param TestCase[] $testClass
+     *
+     * @throws ReflectionException
      */
     private function test(array $testClasses): bool
     {
@@ -120,45 +125,27 @@ class Tester
         /** @var TestCase $testClass */
         foreach ($testClasses as $testClass) {
             $methods = get_class_methods($testClass);
-
+            if (!class_exists(DataProvider::class, false)) {
+                require __DIR__ . '/Tests/DataProvider.php';
+            }
             foreach ($methods as $method) {
                 if (str_starts_with($method, 'test')) {
                     $mt = microtime(true);
-                    if (method_exists($testClass::class, 'setUp')) {
-                        $testClass->setUp();
-                    }
-                    try {
-                        $testClass->_setExpectNextMethod();
-                        $testClass->$method();
-                        $launches = $testClass->_getTestResults();
-                        foreach ($launches as $item) {
-                            $tests++;
-                            $line++;
-                            [$type, $launch] = $item;
-                            if ($launch) {
-                                echo $this->isL() ? $tests . ' OK ' . $testClass::class . ':' . $method . $this->t($mt) : '.';
-                            } else {
-                                echo $this->isL() ? $tests . ' FAILURE ' . $testClass::class . ':' . $method . $this->t($mt) : 'F';
-                                $failures[] = ['type' => $type, 'class' => $testClass::class, 'method' => $method];
-                            }
-                            if ($line === self::PER_LINE) {
-                                echo $this->isL() ? '' : " ($tests)" . PHP_EOL;
-                                $line = 0;
-                            }
+                    $reflectionMethod = new ReflectionMethod($testClass::class, $method);
+                    if ($attributes = $reflectionMethod->getAttributes(DataProvider::class)) {
+                        $functionName = current($attributes)->newInstance()->functionName;
+                        foreach ($testClass->$functionName() as $key => $values) {
+                            $mt = microtime(true);
+                            $function = function () use ($testClass, $method, $values) {
+                                $testClass->$method(...$values);
+                            };
+                            $this->executeTests($function, $testClass, $method, $mt, $tests, $line, $errors, $failures, (string)$key);
                         }
-                    } catch (Throwable $t) {
-                        echo $this->isL() ? $tests . ' ERROR ' . $testClass::class . ':' . $method . $this->t($mt) : 'E';
-                        $errors[] = $testClass::class . ':' . $method . PHP_EOL . $t->getMessage() . ' ' . $t->getTraceAsString();
-                        $tests++;
-                        $line++;
-                    }
-                    if ($line === self::PER_LINE) {
-                        echo $this->isL() ? '' : " ($tests)" . PHP_EOL;
-                        $line = 0;
-                    }
-
-                    if (method_exists($testClass::class, 'tearDown')) {
-                        $testClass->tearDown();
+                    } else {
+                        $function = function () use ($testClass, $method) {
+                            $testClass->$method();
+                        };
+                        $this->executeTests($function, $testClass, $method, $mt, $tests, $line, $errors, $failures);
                     }
                 }
             }
@@ -166,7 +153,7 @@ class Tester
         $info = 'Tests: ' . $tests;
         echo PHP_EOL . PHP_EOL . 'Time: ' . gmdate('H:i:s', (time() - $start)) . ', ';
         echo 'Memory: ' . round(memory_get_peak_usage() / 1024 / 1024, 2) . ' MB' . PHP_EOL . PHP_EOL;
-        
+
         if (count($failures)) {
             echo 'Failures: ' . count($failures) . PHP_EOL;
             foreach ($failures as $key => $failure) {
@@ -175,7 +162,7 @@ class Tester
             echo PHP_EOL . PHP_EOL;
             $info .= ', Failures: ' . count($failures);
         }
-        
+
         if (count($errors)) {
             echo 'Errors: ' . count($errors) . PHP_EOL;
             foreach ($errors as $key => $error) {
@@ -184,7 +171,7 @@ class Tester
             echo PHP_EOL . PHP_EOL;
             $info .= ', Errors: ' . count($errors);
         }
-        
+
         $assertions = $tests - count($failures) - count($errors);
         $info .= ', Assertions: ' . ($tests - count($failures) - count($errors)) . PHP_EOL;
         $status = $assertions === $tests;
@@ -207,5 +194,54 @@ class Tester
             $name = 's';
         }
         return " ({$t}{$name})" . PHP_EOL;
+    }
+
+    public function executeTests(
+        callable $function,
+        TestCase $testClass,
+        string   $method,
+        float    $mt,
+        int      &$tests,
+        int      &$line,
+        array    &$errors,
+        array    &$failures,
+        string   $key = '',
+    ): void {
+        if (method_exists($testClass::class, 'setUp')) {
+            $testClass->setUp();
+        }
+        try {
+            $testClass->_setExpectNextMethod();
+            $function();
+            $launches = $testClass->_getTestResults();
+            $key = $key ? " {$key} " : '';
+            foreach ($launches as $item) {
+                $tests++;
+                $line++;
+                [$type, $launch] = $item;
+                if ($launch) {
+                    echo $this->isL() ? $tests . ' OK ' . $testClass::class . ':' . $method . $key . $this->t($mt) : '.';
+                } else {
+                    echo $this->isL() ? $tests . ' FAILURE ' . $testClass::class . ':' . $method . $key . $this->t($mt) : 'F';
+                    $failures[] = ['type' => $type, 'class' => $testClass::class, 'method' => $method];
+                }
+                if ($line === self::PER_LINE) {
+                    echo $this->isL() ? '' : " ($tests)" . PHP_EOL;
+                    $line = 0;
+                }
+            }
+        } catch (Throwable $t) {
+            echo $this->isL() ? $tests . ' ERROR ' . $testClass::class . ':' . $method . $key . $this->t($mt) : 'E';
+            $errors[] = $testClass::class . ':' . $method . $key . PHP_EOL . $t->getMessage() . ' ' . $t->getTraceAsString();
+            $tests++;
+            $line++;
+        }
+        if ($line === self::PER_LINE) {
+            echo $this->isL() ? '' : " ($tests)" . PHP_EOL;
+            $line = 0;
+        }
+        if (method_exists($testClass::class, 'tearDown')) {
+            $testClass->tearDown();
+        }
     }
 }

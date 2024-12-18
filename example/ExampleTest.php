@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Phphleb\TestO\Example;
 
 use Phphleb\TestO\TestCase;
+use Phphleb\TestO\Tests\DataProvider;
 
 /**
  * Sample class for tests.
@@ -62,6 +63,37 @@ class ExampleTest extends TestCase
     public function testExampleThirdMethod(): void
     {
         $this->assertArrayEquals(expected: [], actual: []);
+    }
+
+    /**
+     * An example of complex processing of similar tests using a data provider.
+     * In this case, a function is assigned through the DataProvider attribute,
+     * whose data is passed to the method as arguments.
+     *
+     * Пример комплексной обработки схожих тестов при помощи провайдера данных.
+     * В данном случае через атрибут DataProvider назначается функция,
+     * данные которой передаются в метод как аргументы.
+     */
+    #[DataProvider('exampleProvider')]
+    public function testExampleDataProvider(int $a, int $b, int $expected): void
+    {
+        $this->assertEquals($a + $b, $expected);
+    }
+
+    /**
+     * Test data set for DataProvider.
+     * Each position will be performed as a separate test.
+     *
+     * Набор тестовых данных для DataProvider.
+     * Каждая позиция будет выполнена как отдельный тест.
+     */
+    public function exampleProvider(): iterable
+    {
+        return [
+        'provider case 1' => [1, 2, 3],
+        'provider case 2' => [2, 3, 5],
+        'provider case 3' => [3, 5, 8],
+    ];
     }
 
     /**
