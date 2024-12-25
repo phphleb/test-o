@@ -55,9 +55,13 @@ class ExampleTest extends TestCase
 
     /**
      * An example of a strict comparison of two arrays.
+     * In associative arrays, the order of the keys
+     * does not matter for comparison.
      * For testing purposes, the method name must begin with 'test'.
      *
      * Пример строгой сверки двух массивов.
+     * В ассоциативных массивах порядок ключей
+     * не имеет значения для сравнения.
      * Для тестирования, название метода должно начинаться с 'test'.
      */
     public function testExampleThirdMethod(): void
@@ -66,13 +70,39 @@ class ExampleTest extends TestCase
     }
 
     /**
+     * An example of a strict test for inequality of two values.
+     * For testing purposes, the method name must begin with 'test'.
+     *
+     * Пример строгой проверки на неравенство двух значений.
+     * Для тестирования, название метода должно начинаться с 'test'.
+     */
+    public function testExampleFourthMethod(): void
+    {
+        $this->assertNotEquals(2 + 2, 5);
+    }
+
+    /**
+     * An example of a strict test for equality of two values.
+     * For testing purposes, the method name must begin with 'test'.
+     *
+     * Пример строгой проверки на равенство двух значений.
+     * Для тестирования, название метода должно начинаться с 'test'.
+     */
+    public function testExampleFifthMethod(): void
+    {
+        $this->assertEquals(2 + 2, 4);
+    }
+
+    /**
      * An example of complex processing of similar tests using a data provider.
      * In this case, a function is assigned through the DataProvider attribute,
      * whose data is passed to the method as arguments.
+     * For testing purposes, the method name must begin with 'test'.
      *
      * Пример комплексной обработки схожих тестов при помощи провайдера данных.
      * В данном случае через атрибут DataProvider назначается функция,
      * данные которой передаются в метод как аргументы.
+     * Для тестирования, название метода должно начинаться с 'test'.
      */
     #[DataProvider('exampleProvider')]
     public function testExampleDataProvider(int $a, int $b, int $expected): void

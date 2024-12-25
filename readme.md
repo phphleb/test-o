@@ -23,11 +23,12 @@ Tests will be performed:
 Test-O 0.0.0 by Foma Tuturov.
 
 Runtime:       PHP 8.2.7
-......
+........
 
-Time: 00:00:00, Memory: 0.51 MB
+Time: 00:00:00, Memory: 0.52 MB
 
-OK Tests: 6, Assertions: 6
+OK Tests: 8, Assertions: 8
+
 
 ```
 
@@ -40,17 +41,20 @@ Tests will be performed:
 Test-O 0.0.0 by Foma Tuturov.
 
 Runtime:       PHP 8.2.7
-1 OK Phphleb\TestO\Example\ExampleTest:testExampleFirstMethod (0.096ms)
-2 OK Phphleb\TestO\Example\ExampleTest:testExampleSecondMethod (0.058ms)
-3 OK Phphleb\TestO\Example\ExampleTest:testExampleThirdMethod (0.096ms)
-4 OK Phphleb\TestO\Example\ExampleTest:testExampleDataProvider provider case 1  (0.086ms)
-5 OK Phphleb\TestO\Example\ExampleTest:testExampleDataProvider provider case 2  (0.033ms)
-6 OK Phphleb\TestO\Example\ExampleTest:testExampleDataProvider provider case 3  (0.021ms)
+1 OK Phphleb\TestO\Example\ExampleTest:testExampleFirstMethod (0.109ms)
+2 OK Phphleb\TestO\Example\ExampleTest:testExampleSecondMethod (0.066ms)
+3 OK Phphleb\TestO\Example\ExampleTest:testExampleThirdMethod (0.084ms)
+4 OK Phphleb\TestO\Example\ExampleTest:testExampleFourthMethod (0.054ms)
+5 OK Phphleb\TestO\Example\ExampleTest:testExampleFifthMethod (0.038ms)
+6 OK Phphleb\TestO\Example\ExampleTest:testExampleDataProvider provider case 1  (0.037ms)
+7 OK Phphleb\TestO\Example\ExampleTest:testExampleDataProvider provider case 2  (0.022ms)
+8 OK Phphleb\TestO\Example\ExampleTest:testExampleDataProvider provider case 3  (0.031ms)
 
 
-Time: 00:00:00, Memory: 0.51 MB
+Time: 00:00:00, Memory: 0.52 MB
 
-OK Tests: 6, Assertions: 6
+OK Tests: 8, Assertions: 8
+
 
 ```
 

@@ -42,7 +42,7 @@ class Tester
     {
         $dir = $argA;
         if ($argB !== null) {
-            if (in_array($argA, ['-l', '-L', '--list', '--List', '--LIST', '-LIST', '-List', '-list'])) {
+            if (in_array(strtolower($argA), ['-l', '--list', '-list'])) {
                 $this->mode = self::C9N_MODE;
                 $dir = $argB;
             } else {
@@ -73,26 +73,27 @@ class Tester
         include __DIR__ . '/Tests/ArrayEqualsTest.php';
 
         if ($this->directoryOrFile) {
-            if (is_dir($this->directoryOrFile)) {
+            $target = $this->directoryOrFile;
+            if (is_dir($target)) {
                 $files = new CallbackFilterIterator(
                     new RecursiveIteratorIterator(
-                        new RecursiveDirectoryIterator($this->directoryOrFile, FilesystemIterator::SKIP_DOTS)
+                        new RecursiveDirectoryIterator($target, FilesystemIterator::SKIP_DOTS)
                     ),
                     function (SplFileInfo $current) {
                         return $current->isFile();
                     }
                 );
             } else {
-                if (str_contains($this->directoryOrFile, '.php:')) {
-                    $parts = explode('.php:', $this->directoryOrFile, 2);
-                    [$this->directoryOrFile, $this->method] = $parts;
-                    $this->directoryOrFile .= '.php';
+                if (str_contains($target, '.php:')) {
+                    $parts = explode('.php:', $target, 2);
+                    [$target, $this->method] = $parts;
+                    $target .= '.php';
                 }
-                $files = [$this->directoryOrFile];
+                $files = [$target];
             }
 
-            if (!file_exists($this->directoryOrFile)) {
-                throw new ErrorException("The resource at `$this->directoryOrFile` was not found.");
+            if (!file_exists($target)) {
+                throw new ErrorException("The resource at `$target` was not found.");
             }
         }
 
@@ -115,9 +116,9 @@ class Tester
     }
 
     /**
-     * Handling one class with tests.
+     * Processing files (classes) with tests.
      *
-     * Обработка одного класса с тестами.
+     * Обработка файлов (классов) с тестами.
      *
      * @param TestCase[] $testClass
      *
@@ -171,7 +172,7 @@ class Tester
         if (count($failures)) {
             echo 'Failures: ' . count($failures) . PHP_EOL;
             foreach ($failures as $key => $failure) {
-                echo ($key + 1) . ') ' . $failure['type'] . ' failure in ' . $failure['class'] . ':' . $failure['method'] . PHP_EOL;
+                echo ($key + 1) . ') ' . $failure['type'] . ' failure in ' . $failure['class'] . ':' . $failure['method'] . ' ' . $failure['message'] . PHP_EOL;
             }
             echo PHP_EOL . PHP_EOL;
             $info .= ', Failures: ' . count($failures);
@@ -232,12 +233,12 @@ class Tester
             foreach ($launches as $item) {
                 $tests++;
                 $line++;
-                [$type, $launch] = $item;
+                [$type, $launch, $message] = $item;
                 if ($launch) {
                     echo $this->isL() ? $tests . ' OK ' . $testClass::class . ':' . $method . $key . $this->t($mt) : '.';
                 } else {
                     echo $this->isL() ? $tests . ' FAILURE ' . $testClass::class . ':' . $method . $key . $this->t($mt) : 'F';
-                    $failures[] = ['type' => $type, 'class' => $testClass::class, 'method' => $method];
+                    $failures[] = ['type' => $type, 'class' => $testClass::class, 'method' => $method, 'message' => $message];
                 }
                 if ($line === self::PER_LINE) {
                     echo $this->isL() ? '' : " ($tests)" . PHP_EOL;
