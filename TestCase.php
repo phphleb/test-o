@@ -38,12 +38,12 @@ class TestCase
      * @param bool $condition - the result of a fulfilled condition.
      *                        - результат выполненного условия.
      *
-     * @param string $errorMessage - message to be output if the test is not successful.
-     *                             - сообщение для вывода в случае если тест не успешен.
+     * @param string $message - message to be output if the test is not successful.
+     *                        - сообщение для вывода в случае если тест не успешен.
      */
-    final public function assertTrue(bool $condition, string $errorMessage = ''): void
+    final public function assertTrue(bool $condition, string $message = ''): void
     {
-        $this->tests[] = ['AssertTrueTest', $condition === true, $errorMessage];
+        $this->tests[] = ['AssertTrueTest', $condition === true, $message];
     }
 
     /**
@@ -54,12 +54,12 @@ class TestCase
      * @param bool $condition - the result of a fulfilled condition.
      *                        - результат выполненного условия.
      *
-     * @param string $errorMessage - message to be output if the test is not successful.
-     *                             - сообщение для вывода в случае если тест не успешен.
+     * @param string $message - message to be output if the test is not successful.
+     *                        - сообщение для вывода в случае если тест не успешен.
      */
-    final public function assertFalse(bool $condition, string $errorMessage = ''): void
+    final public function assertFalse(bool $condition, string $message = ''): void
     {
-        $this->tests[] = ['AssertFalseTest', $condition === false, $errorMessage];
+        $this->tests[] = ['AssertFalseTest', $condition === false, $message];
     }
 
     /**
@@ -73,12 +73,12 @@ class TestCase
      * @param bool|string|int|float $actual - second value being compared.
      *                                      - второе сравниваемое значение.
      *
-     * @param string $errorMessage - message to be output if the test is not successful.
-     *                             - сообщение для вывода в случае если тест не успешен.
+     * @param string $message - message to be output if the test is not successful.
+     *                        - сообщение для вывода в случае если тест не успешен.
      */
-    final public function assertEquals(bool|string|int|float $expected, bool|string|int|float $actual, string $errorMessage = ''): void
+    final public function assertEquals(bool|string|int|float $expected, bool|string|int|float $actual, string $message = ''): void
     {
-        $this->tests[] = ['AssertEqualsTest', $expected === $actual, $errorMessage];
+        $this->tests[] = ['AssertEqualsTest', $expected === $actual, $message];
     }
 
     /**
@@ -92,12 +92,12 @@ class TestCase
      * @param bool|string|int|float $actual - second value being compared.
      *                                      - второе сравниваемое значение.
      *
-     * @param string $errorMessage - message to be output if the test is not successful.
-     *                             - сообщение для вывода в случае если тест не успешен.
+     * @param string $message - message to be output if the test is not successful.
+     *                        - сообщение для вывода в случае если тест не успешен.
      */
-    final public function assertNotEquals(bool|string|int|float $expected, bool|string|int|float $actual, string $errorMessage = ''): void
+    final public function assertNotEquals(bool|string|int|float $expected, bool|string|int|float $actual, string $message = ''): void
     {
-        $this->tests[] = ['AssertNotEqualsTest', $expected !== $actual, $errorMessage];
+        $this->tests[] = ['AssertNotEqualsTest', $expected !== $actual, $message];
     }
 
     /**
@@ -113,12 +113,12 @@ class TestCase
      * @param array $actual - the second array to compare.
      *                      - второй сравниваемый массив.
      *
-     * @param string $errorMessage - message to be output if the test is not successful.
-     *                             - сообщение для вывода в случае если тест не успешен.
+     * @param string $message - message to be output if the test is not successful.
+     *                        - сообщение для вывода в случае если тест не успешен.
      */
-    final public function assertArrayEquals(array $expected, array $actual, string $errorMessage = ''): void
+    final public function assertArrayEquals(array $expected, array $actual, string $message = ''): void
     {
-        $this->tests[] = ['assertArrayEqualsTest', ArrayEqualsTest::check($expected, $actual), $errorMessage];
+        $this->tests[] = ['assertArrayEqualsTest', ArrayEqualsTest::check($expected, $actual), $message];
     }
 
     /**
